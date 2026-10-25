@@ -1,0 +1,76 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<style>
+  :root { --radius: 14px; }
+  html, body {
+    margin: 0; height: 100%; overflow: hidden;
+    background: transparent;
+    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  }
+  /* Rounded, translucent shell around everything */
+  .shell {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius);
+    overflow: hidden;
+    /* subtle frosted frame; webview content below is opaque */
+    background: rgba(28, 28, 30, 0.35);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.35);
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+  /* Draggable header bar */
+  .header {
+    -webkit-app-region: drag;
+    height: 36px;
+    flex: 0 0 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    background: rgba(40, 40, 44, 0.55);
+    backdrop-filter: blur(12px);
+    color: rgba(255,255,255,0.85);
+    font-size: 12px;
+    font-weight: 600;
+    user-select: none;
+  }
+  .title { display: flex; align-items: center; gap: 7px; letter-spacing: .02em; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: #d97757; }
+  .buttons { -webkit-app-region: no-drag; display: flex; gap: 6px; }
+  .btn {
+    width: 22px; height: 22px; border: none; border-radius: 6px;
+    background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.8);
+    cursor: pointer; font-size: 13px; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .btn:hover { background: rgba(255,255,255,0.18); }
+  .btn.close:hover { background: #e5534b; color: #fff; }
+  webview { flex: 1 1 auto; width: 100%; border: none; background: #fff; }
+</style>
+</head>
+<body>
+  <div class="shell">
+    <div class="header">
+      <div class="title"><span class="dot"></span> Claude</div>
+      <div class="buttons">
+        <button class="btn" id="hide" title="Hide (Cmd+Shift+C)">—</button>
+        <button class="btn close" id="close" title="Quit">✕</button>
+      </div>
+    </div>
+    <webview id="view" src="https://claude.ai" partition="persist:claude-sticky"
+             allowpopups></webview>
+  </div>
+
+  <script>
+    const { ipcRenderer } = require('electron');
+    document.getElementById('hide').onclick  = () => ipcRenderer.send('win:hide');
+    document.getElementById('close').onclick = () => ipcRenderer.send('app:quit');
+    // keep target=_blank links inside the webview
+    const view = document.getElementById('view');
+    view.addEventListener('new-window', (e) => { e.preventDefault(); view.src = e.url; });
+  </script>
+</body>
+</html>
