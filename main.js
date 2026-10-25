@@ -40,6 +40,9 @@ function createWindow() {
 
   win.loadFile('index.html');
 
+  // Overall window translucency (fades everything, incl. Claude's page).
+  win.setOpacity(0.78);
+
   win.on('close', (e) => {
     if (!isQuitting) { e.preventDefault(); win.hide(); } // closing just hides
   });
@@ -68,6 +71,14 @@ app.whenReady().then(() => {
   createTray();
 
   globalShortcut.register('CommandOrControl+Shift+C', toggle);
+
+  // Adjust transparency on the fly.
+  globalShortcut.register('CommandOrControl+Shift+Up', () => {
+    if (win) win.setOpacity(Math.min(1, win.getOpacity() + 0.08));
+  });
+  globalShortcut.register('CommandOrControl+Shift+Down', () => {
+    if (win) win.setOpacity(Math.max(0.25, win.getOpacity() - 0.08));
+  });
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
