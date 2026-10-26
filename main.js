@@ -16,8 +16,6 @@ function createWindow() {
     transparent: true,        // transparent background -> rounded/frosted frame
     backgroundColor: '#00000000',
     hasShadow: true,
-    vibrancy: 'hud',          // macOS frosted translucency behind the shell
-    visualEffectState: 'active',
     resizable: true,
     alwaysOnTop: true,
     skipTaskbar: true,
@@ -34,6 +32,11 @@ function createWindow() {
   // Core feature: exclude from screen capture / screen share.
   // macOS -> NSWindowSharingNone ; Windows -> WDA_EXCLUDEFROMCAPTURE.
   win.setContentProtection(true);
+
+  // macOS-only frosted translucency behind the shell (no-op elsewhere).
+  if (process.platform === 'darwin') {
+    try { win.setVibrancy('hud'); } catch (e) {}
+  }
 
   win.setAlwaysOnTop(true, 'screen-saver');
   win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
