@@ -21,15 +21,23 @@
       "index.html",
       "iconTemplate.png"
     ],
+    "publish": {
+      "provider": "github",
+      "owner": "chowpawan",
+      "repo": "cluely"
+    },
     "mac": {
       "category": "public.app-category.productivity",
-      "target": "dir",
+      "target": [
+        "dmg",
+        "zip"
+      ],
       "identity": null
     },
     "win": {
       "target": [
-        "portable",
-        "nsis"
+        "nsis",
+        "portable"
       ]
     }
   }

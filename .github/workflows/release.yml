@@ -1,0 +1,36 @@
+name: Release
+
+# Builds macOS + Windows apps natively and attaches them to a GitHub Release
+# whenever a version tag (e.g. v1.0.0) is pushed.
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build and publish
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # electron-builder auto-detects the platform from the runner
+        # and uploads artifacts to the release for this tag.
+        run: npx electron-builder --publish always
